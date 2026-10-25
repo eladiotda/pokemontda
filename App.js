@@ -1,20 +1,45 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import ListScreen from "./src/screens/ListScreen";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    // SafeAreaView para que nada quede debajo de la camara o el reloj
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safe} edges={["top"]}>
+        <StatusBar style="light" />
+
+        <View style={styles.header}>
+          <Text style={styles.title}>PokéDex Explorer</Text>
+        </View>
+
+        <View style={styles.body}>
+          {/* muestra en consola */}
+          <ListScreen
+            onSelect={(id) => console.log("Tocaron el pokemon", id)}
+          />
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safe: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#D7263D",
+  },
+  header: {
+    padding: 16,
+  },
+  title: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  body: {
+    flex: 1,
+    backgroundColor: "#f2f2f2",
   },
 });
