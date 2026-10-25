@@ -8,6 +8,19 @@ function getImageUrl(id) {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 }
 
+// la lista solo trae name y url, el id toca sacarlo del final de la url
+// ejemplo: "https://pokeapi.co/api/v2/pokemon/25/" -> 25
+function toPokemonItem(item) {
+  const parts = item.url.split('/');
+  const id = Number(parts[parts.length - 2]); // el ultimo es "" por el "/" final
+
+  return {
+    id: id,
+    name: item.name,
+    image: getImageUrl(id),
+  };
+}
+
 // Trae 20 pokemon empezando desde "offset"
 // async/await: esperamos la respuesta antes de seguir
 export async function getPokemonList(offset) {
@@ -19,21 +32,20 @@ export async function getPokemonList(offset) {
   }
 
   const data = await response.json();
+  return data.results.map(toPokemonItem);
+}
 
-  // la lista solo trae name y url, el id toca sacarlo del final de la url
-  // ejemplo: "https://pokeapi.co/api/v2/pokemon/25/" -> 25
-  const pokemons = data.results.map((item) => {
-    const parts = item.url.split('/');
-    const id = Number(parts[parts.length - 2]); // el ultimo es "" por el "/" final
+// Trae TODOS los pokemon (solo nombre, id e imagen) para el buscador.
+// La PokeAPI no busca por partes ("pika" da 404), asi que filtramos nosotros en la app
+export async function getAllPokemon() {
+  const response = await fetch(`${BASE_URL}/pokemon?limit=10000`);
 
-    return {
-      id: id,
-      name: item.name,
-      image: getImageUrl(id),
-    };
-  });
+  if (!response.ok) {
+    throw new Error('No se pudo cargar la lista de Pokémon.');
+  }
 
-  return pokemons;
+  const data = await response.json();
+  return data.results.map(toPokemonItem);
 }
 
 // Trae la ficha de un pokemon por nombre o por numero
