@@ -1,11 +1,16 @@
+import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import ListScreen from "./src/screens/ListScreen";
+import DetailScreen from "./src/screens/DetailScreen";
 
 export default function App() {
+  // navegacion sencilla con useState (sin Expo Router):
+  // null = estamos en la lista, si tiene algo = mostramos la ficha de ese pokemon
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
+
   return (
-    // SafeAreaView para que nada quede debajo de la camara o el reloj
     <SafeAreaProvider>
       <SafeAreaView style={styles.safe} edges={["top"]}>
         <StatusBar style="light" />
@@ -15,10 +20,18 @@ export default function App() {
         </View>
 
         <View style={styles.body}>
-          {/* muestra en consola */}
-          <ListScreen
-            onSelect={(id) => console.log("Tocaron el pokemon", id)}
-          />
+          {/* la lista no se quita, asi al volver sigue donde estabamos */}
+          <ListScreen onSelect={setSelectedPokemon} />
+
+          {/* la ficha se pone encima de la lista */}
+          {selectedPokemon !== null && (
+            <View style={StyleSheet.absoluteFill}>
+              <DetailScreen
+                nameOrId={selectedPokemon}
+                onBack={() => setSelectedPokemon(null)}
+              />
+            </View>
+          )}
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
